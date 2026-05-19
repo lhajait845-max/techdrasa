@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en" class="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>TechDrasa - Moroccan Student Learning Platform</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+    <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class',
+            theme: {
+                extend: {
+                    colors: {
+                        primary: {
+                            50: '#f0f9ff',
+                            100: '#e0f2fe',
+                            500: '#0ea5e9',
+                            600: '#0284c7',
+                            700: '#0369a1',
+                            900: '#0c4a6e',
+                        },
+                        accent: {
+                            500: '#8b5cf6',
+                            600: '#7c3aed',
+                        }
+                    },
+                    animation: {
+                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'slide-up': 'slideUp 0.5s ease-out',
+                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                    },
+                    keyframes: {
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        slideUp: {
+                            '0%': { transform: 'translateY(20px)', opacity: '0' },
+                            '100%': { transform: 'translateY(0)', opacity: '1' },
+                        }
+                    }
+                }
+            }
+        }
+    </script>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cairo:wght@400;600;700&display=swap');
+        
+        body {
+            font-family: 'Inter', 'Cairo', sans-serif;
+        }
+        
+        .glass-panel {
+            background: rgba(255, 255, 255, 0.7);
+            backdrop-filter: blur(12px);
+            border: 1px solid rgba(255, 255, 255, 0.3);
+        }
+        
+        .dark .glass-panel {
+            background: rgba(30, 41, 59, 0.7);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+        }
+        
+        .gradient-text {
+            background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            background-clip: text;
+        }
+        
+        .card-hover {
+            transition: all 0.3s ease;
+        }
+        
+        .card-hover:hover {
+            transform: translateY(-4px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+        }
+        
+        .flip-card {
+            perspective: 1000px;
+        }
+        
+        .flip-card-inner {
+            transition: transform 0.6s;
+            transform-style: preserve-3d;
+        }
+        
+        .flip-card.flipped .flip-card-inner {
+            transform: rotateY(180deg);
+        }
+        
+        .flip-card-front, .flip-card-back {
+            backface-visibility: hidden;
+            -webkit-backface-visibility: hidden;
+        }
+        
+        .flip-card-back {
+            transform: rotateY(180deg);
+        }
+        
+        .scrollbar-hide::-webkit-scrollbar {
+            display: none;
+        }
+        
+        .scrollbar-hide {
+            -ms-overflow-style: none;
+            scrollbar-width: none;
+        }
+    </style>
+</head>
+<body class="bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+    <div id="root"></div>
+
+    <script type="text/babel">
+        const { useState, useEffect } = React;
+        
+        const Icons = {
+            Sun: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
+            Moon: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>,
+            Upload: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>,
+            BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
+            Calculator: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>,
+            Atom: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/></svg>,
+            Brain: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/></svg>,
+            Sparkles: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>,
+            ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
+            RotateCcw: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"/></svg>,
+            Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>,
+            X: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
+            Zap: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
+            Trophy: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
+            GraduationCap: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+        };
+
+        // Custom Moroccan Baccalaureate (PC Branch) Data
+        const mockSummaries = {
+            math: [
+                "Continuité et Dérivabilité: Une fonction f est continue en a si la limite quand x tend vers a est égale à f(a).",
+                "Théorème des Valeurs Intermédiaires (TVI): Si f est continue et strictement monotone sur [a,b], alors pour tout y entre f(a) et f(b), l'équation f(x)=y admet une unique solution.",
+                "Nombres Complexes: Tout nombre complexe s'écrit sous forme algébrique z = x + iy, ou trigonométrique z = r(cos θ + i sin θ).",
+                "Suites Numériques: Une suite est convergente si elle admet une limite finie. Toute suite croissante et majorée est convergente.",
+                "Fonctions Logarithme et Exponentielle: ln(x) est définie sur ]0, +∞[ et c'est la réciproque de la fonction e^x."
+            ],
+            physics: [
+                "Circuit RC: Caractérisé par la constante de temps τ = RC. L'équation différentielle en uc vérifie uc + RC(duc/dt) = E.",
+                "Circuit RL: Comportement de la bobine qui s'oppose à l'établissement du courant. Constante de temps τ = L/R.",
+                "Circuit RLC en série: Présence d'oscillations libres amorties (pseudo-périodiques). La résistance globale provoque une perte d'énergie par effet Joule.",
+                "Mécanique (Lois de Newton): Le vecteur accélération d'un solide de masse m dans un référentiel galiléen vérifie ΣF = m.a.",
+                "Suivi temporel d'une réaction chimique: La vitesse volumique est maximale à t=0 et diminue au cours du temps à cause de la diminution des concentrations des réactifs."
+            ],
+            philosophy: [
+                "الشخص والهوية: ما الذي يحدد هوية الشخص؟ هل هو العقل وتطابق الذكرى (جون لوك) أم الإرادة (شوبنهاور) أم الوعي والتفكير (ديكارت)؟",
+                "الشخص بين الضرورة والحرية: هل الشخص كائن حر في تصرفاته أم أنه خاضع لحتميات طبيعية، اجتماعية ونفسية (سبينوزا وفرويد)؟",
+                "الغير (وجود الغير): هل وجود الغير شرط ضروري لوعي الذات بوجودها (سارتر) أم أنه مجرد وجود تهديدي يعزلوها عن حريتها؟",
+                "المعرفة العلمية والنظرية والتجربة: بناء المعرفة العلمية يتأرجح بين العقلانية العلمية (العقل) وبين التجريبية الواقعية (المختبر).",
+                "الدولة (مشروعية الدولة وغاياتها): هل غاية الدولة هي توفير الحرية والأمن للمواطنين (سبينوزا) أم أنها أداة سيطرة وعنف (ماركس)؟"
+            ]
+        };
+
+        const mockFormulas = {
+            math: [
+                { name: "Forme Trigonométrique", formula: "z = r(\\cos \\theta + i \\sin \\theta)", desc: "Avec r = |z| et \\theta = arg(z)" },
+                { name: "Formule de Moivre", formula: "(\\cos \\theta + i \\sin \\theta)^n = \\cos(n\\theta) + i \\sin(n\\theta)", desc: "Utile pour la linéarisation" },
+                { name: "Limite Usuelle Exponentielle", formula: "\\lim_{x \\to 0} \\frac{e^x - 1}{x} = 1", desc: "Limite de base indispensable" },
+                { name: "Suite Géométrique", formula: "u_n = u_p \\times q^{n-p}", desc: "Expression générale en fonction de n" }
+            ],
+            physics: [
+                { name: "Énergie Condensateur", formula: "E_e = \\frac{1}{2} C \\cdot u_C^2", desc: "Énergie électrique emmagasinée dans un condensateur" },
+                { name: "Équation Différentielle (RC)", formula: "u_C + \\tau \\frac{du_C}{dt} = E", desc: "Avec \\tau = RC (constante de temps)" },
+                { name: "Période Propre (LC)", formula: "T_0 = 2\\pi \\sqrt{L \\cdot C}", desc: "Période des oscillations idéales non amorties" },
+                { name: "Deuxième loi de Newton", formula: "\\sum \\vec{F}_{ext} = m \\cdot \\vec{a}_g", desc: "Valable uniquement dans un référentiel galiléen" }
+            ],
+            philosophy: [
+                { name: "الكوجيتو الديكارتي", formula: "\\text{أنا أفكر} \\therefore \\text{أنا موجود}", desc: "أساس هوية الشخص والوعي عند رينيه ديكارت" },
+                { name: "الحتمية السبينوزية", formula: "\\text{الحرية} = \\text{وعي بالضرورة}", desc: "الإنسان يظن نفسه حراً لكنه يجهل الأسباب الموجهة له" },
+                { name: "مفارقة وجود الغير", formula: "\\text{الغير} = \\text{الوسيط الضروري بيني وبين ذاتي}", desc: "أطروحة جان بول سارتر في الوجود والعدم" }
+            ]
+        };
+
+        const mockQuiz = {
+            math: [
+                { q: "Quelle est la limite de ln(x)/x quand x tend vers +∞?", a: "0", options: ["0", "+∞", "1", "-∞"] },
+                { q: "Si z = 1 + i, quel est son module |z|?", a: "√2", options: ["1", "2", "√2", "0"] },
+                { q: "Une suite croissante et majorée est toujours...?", a: "Convergente", options: ["Divergente", "Convergente", "Nulle", "Infinie"] }
+            ],
+            physics: [
+                { q: "Quelle est l'unité de la constante de temps τ?", a: "Seconde (s)", options: ["Farad", "Ohm", "Seconde (s)", "Volt"] },
+                { q: "Dans un circuit RLC, l'amortissement est dû à :", a: "La résistance", options: ["Le condensateur", "La bobine", "La résistance", "Le générateur"] },
+                { q: "Quelle est l'expression de la force de frottement fluide aux faibles vitesses?", a: "f = -k.v", options: ["f = -k.v", "f = -k.v²", "f = m.g", "f = P/t"] }
+            ],
+            philosophy: [
+                { q: "من هو الفيلسوف الذي يربط هوية الشخص بالذاكرة والوعي التجريبي؟", a: "جون لوك", options: ["ديكارت", "جون لوك", "شوبنهاور", "سبينوزا"] },
+                { q: "يرى سبينوزا أن القول بأن الإنسان حر تماماً هو مجرد :", a: "وهم", options: ["حقيقة مطلقة", "وهم", "واجب أخلاقي", "ضرورة سياسية"] },
+                { q: "ما هي الأداة التي تعتبرها بعض المواقف (مثل ماكس فيبر) احتكاراً مشروعاً للدولة؟", a: "العنف المشرووع", options: ["العنف المشرووع", "المال", "الدين", "العدالة المطلقة"] }
+            ]
+        };
+
+        const FormulaRenderer = ({ formula }) => {
+            const formatted = formula
+                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="inline-flex flex-col items-center mx-1"><span class="border-b border-current px-1">$1</span><span class="px-1">$2</span></span>')
+                .replace(/\\sqrt\{([^}]+)\}/g, '√<span class="border-t border-current inline-block px-1">$1</span>')
+                .replace(/\^(\d+)/g, '<sup>$1</sup>')
+                .replace(/\^(\{[^}]+\})/g, (m, p1) => `<sup>${p1.slice(1,-1)}</sup>`)
+                .replace(/\\vec\{([^}]+)\}/g, '<span class="overline">$1</span>')
+                .replace(/\\times/g, '×')
+                .replace(/\\cdot/g, '·')
+                .replace(/\\theta/g, 'θ')
+                .replace(/\\cos/g, 'cos')
+                .replace(/\\sin/g, 'sin')
+                .replace(/\\pi/g, 'π')
+                .replace(/\\tau/g, 'τ')
+                .replace(/\\therefore/g, '∴')
+                .replace(/\\text\{([^}]+)\}/g, '$1')
+                .replace(/\\lim_\{([^}]+)\}/g, 'lim<sub>$1</sub>')
+                .replace(/\\to/g, '→')
+                .replace(/\\sum/g, 'Σ');
+            
+            return <span dangerouslySetInnerHTML={{ __html: formatted }} className="font-serif text-lg" />;
+        };
+
+        const TechDrasa = () => {
+            const [darkMode, setDarkMode] = useState(false);
+            const [activeTab, setActiveTab] = useState('upload');
+            const [selectedSubject, setSelectedSubject] = useState(null);
+            const [uploadedText, setUploadedText] = useState('');
+            const [isProcessing, setIsProcessing] = useState(false);
+            const [showDashboard, setShowDashboard] = useState(false);
+            const [currentData, setCurrentData] = useState(null);
+            const [flashcardIndex, setFlashcardIndex] = useState(0);
+            const [flipped, setFlipped] = useState(false);
+            const [quizIndex, setQuizIndex] = useState(0);
+            const [selectedAnswer, setSelectedAnswer] = useState(null);
+            const [score, setScore] = useState(0);
+            const [showResult, setShowResult] = useState(false);
+            const [streak, setStreak] = useState(0);
+
+            useEffect(() => {
+                if (darkMode) document.documentElement.classList.add('dark');
+                else document.documentElement.classList.remove('dark');
+            }, [darkMode]);
+
+            const subjects = [
+                { id: 'math', name: 'Mathématiques', icon: Icons.Calculator, gradient: 'from-blue-500 to-cyan-400' },
+                { id: 'physics', name: 'Physique-Chimie', icon: Icons.Atom, gradient: 'from-purple-500 to-pink-400' },
+                { id: 'philosophy', name: 'الفلسفة', icon: Icons.Brain, gradient: 'from-emerald-500 to-teal-400' }
+            ];
+
+            const handleSubjectSelect = (subjectId) => {
+                setSelectedSubject(subjectId);
+                setUploadedText('');
+                setShowDashboard(false);
+            };
+
+            const handleProcess = () => {
+                if (!selectedSubject && !uploadedText.trim()) return;
+                setIsProcessing(true);
+                const subject = selectedSubject || 'physics';
+                
+                setTimeout(() => {
+                    setCurrentData({
+                        subject: subject,
+                        summary: mockSummaries[subject],
+                        formulas: mockFormulas[subject],
+                        quiz: mockQuiz[subject]
+                    });
+                    setIsProcessing(false);
+                    setShowDashboard(true);
+                    setActiveTab('dashboard');
+                    setFlashcardIndex(0);
+                    setQuizIndex(0);
+                    setScore(0);
+                    setStreak(0);
+                }, 1200);
+            };
+
+            const handleQuizAnswer = (answer) => {
+                setSelectedAnswer(answer);
+                const correct = answer === currentData.quiz[quizIndex].a;
+                if (correct) {
+                    setScore(s => s + 1);
+                    setStreak(s => s + 1);
+                } else {
+                    setStreak(0);
+                }
+                
+                setTimeout(() => {
+                    if (quizIndex < currentData.quiz.length - 1) {
+                        setQuizIndex(q => q + 1);
+                        setSelectedAnswer(null);
+                    } else {
+                        setShowResult(true);
+                    }
+                }, 1200);
+            };
+
+            const resetQuiz = () => {
+                setQuizIndex(0);
+                setScore(0);
+                setSelectedAnswer(null);
+                setShowResult(false);
+                setStreak(0);
+            };
+
+            const isRtl = currentData?.subject === 'philosophy';
+
+            return (
+                <div className="min-h-screen transition-colors duration-300">
+                    <nav className="sticky top-0 z-50 glass-panel border-b border-gray-200 dark:border-gray-700">
+                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
+                            <div className="flex items-center space-x-3">
+                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">T</div>
+                                <div>
+                                    <h1 className="text-xl font-bold gradient-text">TechDrasa</h1>
+                                    <p className="text-xs text-gray-500 dark:text-gray-400">Bac National PC Prep</p>
+                                </div>
+                            </div>
+                            <div className="flex items-center space-x-4">
+                                <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
+                                    {darkMode ? <Icons.Sun /> : <Icons.Moon />}
+                                </button>
+                                <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
+                                    <button onClick={() => setActiveTab('upload')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'upload' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'}`}>Préparer</button>
+                                    {showDashboard && <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'}`}>Dashboard</button>}
+                                </div>
+                            </div>
+                        </div>
+                    </nav>
+
+                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+                        {activeTab === 'upload' && (
+                            <div className="animate-fade-in space-y-8">
+                                <div className="text-center space-y-4 py-8">
+                                    <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-2">
+                                        <Icons.Sparkles /> <span>Révision Intelligente pour le Bac National</span>
+                                    </div>
+                                    <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">Préparez votre <span className="gradient-text">Bac PC 2026</span></h2>
+                                    <p className="text-md text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Choisissez une matière pour charger le contenu du programme marocain officiel ou collez directement votre cours.</p>
+                                </div>
+
+                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
+                                    {subjects.map((subj) => {
+                                        const Icon = subj.icon;
+                                        return (
+                                            <button key={subj.id} onClick={() => handleSubjectSelect(subj.id)} className={`relative p-6 rounded-2xl border-2 transition-all card-hover ${selectedSubject === subj.id ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
+                                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${subj.gradient} flex items-center justify-center text-white mb-4 shadow-md`}><Icon /></div>
+                                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{subj.name}</h3>
+                                                <p className="text-xs text-gray-500 dark:text-gray-400">{subj.id === 'math' ? 'Fonctions, Complexes, Suites' : subj.id === 'physics' ? 'RC, RL, RLC, Mécanique' : 'الشخص، الغير، النظرية والتجريب'}</p>
+                                                {selectedSubject === subj.id && <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center text-white"><Icons.Check /></div>}
+                                            </button>
+                                        );
+                                    })}
+                                </div>
+
+                                <div className="max-w-4xl mx-auto mt-6">
+                                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+                                        <div className="flex items-center space-x-3 mb-4"><Icons.Upload /> <h3 className="text-lg font-semibold">Coller un texte de cours alternatif</h3></div>
+                                        <textarea value={uploadedText} onChange={(e) => setUploadedText(e.target.value)} placeholder="Insérez vos paragraphes de révision ici ou cliquez simplement sur générer après avoir sélectionné une matière ci-dessus..." className="w-full h-32 p-4 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-none focus:ring-2 focus:ring-primary-500 outline-none" />
+                                        <div className="mt-4 flex justify-end">
+                                            <button onClick={handleProcess} disabled={isProcessing || (!selectedSubject && !uploadedText.trim())} className="px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 shadow-md transform hover:scale-105 active:scale-95 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed">
+                                                {isProcessing ? <span className="flex items-center space-x-2"><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analyse en cours...</span></span> : <span className="flex items-center space-x-2"><Icons.Sparkles /><span>Générer les Fiches</span></span>}
+                                            </button>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+
+                        {activeTab === 'dashboard' && showDashboard && currentData && (
+                            <div className="animate-slide-up space-y-8">
+                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
+                                    <div>
+                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Fiche de Révision : {subjects.find(s => s.id === currentData.subject)?.name}</h2>
+                                        <p className="text-gray-500 text-sm">Contenu optimisé pour le Bac PC</p>
+                                    </div>
+                                    <div className="flex items-center space-x-4">
+                                        <div className="px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium flex items-center space-x-2"><Icons.Trophy /> <span>Score: {streak} 🔥</span></div>
+                                        <button onClick={() => { setShowDashboard(false); setActiveTab('upload'); setSelectedSubject(null); setUploadedText(''); }} className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors">Changer de matière</button>
+                                    </div>
+                                </div>
+
+                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+                                    {/* Summary & Quiz Column */}
+                                    <div className="lg:col-span-7 space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+                                            <div className="flex items-center space-x-3 mb-6">
+                                                <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"><Icons.BookOpen /></div>
+                                                <div className={isRtl ? 'mr-3' : 'ml-3'}>
+                                                    <h3 className="text-lg font-bold">{isRtl ? 'الأفكار والمحاور الأساسية' : 'Points Clés du Cours'}</h3>
+                                                    <p className="text-xs text-gray-500">{isRtl ? 'ملخص مركز ومباشر للدرس' : 'Résumé structuré'}</p>
+                                                </div>
+                                            </div>
+                                            <ul className="space-y-4">
+                                                {currentData.summary.map((point, idx) => (
+                                                    <li key={idx} className="flex items-start space-x-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
+                                                        <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 text-xs font-bold flex-shrink-0 mt-0.5 mx-2">{idx + 1}</div>
+                                                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed text-md">{point}</span>
+                                                    </li>
+                                                ))}
+                                            </ul>
+                                        </div>
+
+                                        {/* Quiz Card */}
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+                                            <div className="flex items-center justify-between mb-6">
+                                                <div className="flex items-center space-x-3">
+                                                    <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400"><Icons.Zap /></div>
+                                                    <div className={isRtl ? 'mr-3' : 'ml-3'}>
+                                                        <h3 className="text-lg font-bold">{isRtl ? 'سؤال وجواب كواشـف سريعـة' : 'Quiz Auto-Évaluation'}</h3>
+                                                        <p className="text-xs text-gray-500">{isRtl ? 'اختبر مدى تذكرك وفهمك للمحور' : 'Test de mémorisation active'}</p>
+                                                    </div>
+                                                </div>
+                                                {!showResult && <div className="text-xs font-semibold text-gray-400">Q {quizIndex + 1}/{currentData.quiz.length}</div>}
+                                            </div>
+
+                                            {!showResult ? (
+                                                <div className="space-y-4">
+                                                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700">
+                                                        <p className="text-md font-bold text-gray-900 dark:text-white mb-4">{currentData.quiz[quizIndex].q}</p>
+                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                                                            {currentData.quiz[quizIndex].options.map((option, idx) => {
+                                                                const isSelected = selectedAnswer === option;
+                                                                const isCorrect = option === currentData.quiz[quizIndex].a;
+                                                                return (
+                                                                    <button key={idx} onClick={() => !selectedAnswer && handleQuizAnswer(option)} disabled={selectedAnswer !== null} className={`p-3 rounded-xl border-2 text-left transition-all ${selectedAnswer !== null && isCorrect ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : isSelected && !isCorrect ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary-300'}`}>
+                                                                        <span className="font-medium text-sm">{option}</span>
+                                                                    </button>
+                                                                );
+                                                            })}
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            ) : (
+                                                <div className="text-center py-6">
+                                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xl font-bold mx-auto mb-3 shadow-md">{Math.round((score / currentData.quiz.length) * 100)}%</div>
+                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{isRtl ? `أجبت بشكل صحيح على ${score} من أصل ${currentData.quiz.length}` : `Vous avez validé ${score} réponses sur ${currentData.quiz.length}`}</p>
+                                                    <button onClick={resetQuiz} className="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm flex items-center space-x-2 mx-auto"><Icons.RotateCcw /><span className="mx-2">{isRtl ? 'إعادة المحاولة' : 'Refaire'}</span></button>
+                                                </div>
+                                            )}
+                                        </div>
+                                    </div>
+
+                                    {/* Formulas & Flashcards Column */}
+                                    <div className="lg:col-span-5 space-y-6">
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+                                            <div className="flex items-center space-x-3 mb-6">
+                                                <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400"><Icons.Calculator /></div>
+                                                <div>
+                                                    <h3 className="text-lg font-bold">Relations & Formules</h3>
+                                                    <p className="text-xs text-gray-500">Relations fondamentales pour le Watani</p>
+                                                </div>
+                                            </div>
+                                            
+                                            <div className="space-y-3">
+                                                {currentData.formulas.map((form, idx) => (
+                                                    <div key={idx} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700">
+                                                        <div className="text-xs font-semibold text-primary-600 dark:text-primary-400 mb-1">{form.name}</div>
+                                                        <div className="mb-2 text-center py-2 bg-white dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700 shadow-inner"><FormulaRenderer formula={form.formula} /></div>
+                                                        <p className="text-xs text-gray-500 dark:text-gray-400">{form.desc}</p>
+                                                    </div>
+                                                ))}
+                                            </div>
+                                        </div>
+
+                                        {/* Flashcard Component */}
+                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
+                                            <div className="flex items-center justify-between mb-4">
+                                                <h3 className="text-md font-bold">Fiches Mémoire / Flashcards</h3>
+                                                <span className="text-xs font-medium text-gray-400">{flashcardIndex + 1} / {currentData.formulas.length}</span>
+                                            </div>
+                                            <div className="relative h-44 cursor-pointer" onClick={() => setFlipped(!flipped)}>
+                                                <div className={`flip-card w-full h-full ${flipped ? 'flipped' : ''}`}>
+                                                    <div className="flip-card-inner relative w-full h-full">
+                                                        <div className="flip-card-front absolute w-full h-full bg-slate-100 dark:bg-slate-700 border rounded-xl flex flex-col items-center justify-center p-4 text-center">
+                                                            <span className="text-xs text-primary-500 font-bold uppercase tracking-wide">Concept / Notion</span>
+                                                            <h4 className="text-md font-bold mt-2 text-gray-800 dark:text-white">{currentData.formulas[flashcardIndex].name}</h4>
+                                                            <p className="text-xs text-gray-400 mt-4">Cliquez pour retourner la fiche</p>
+                                                        </div>
+                                                        <div className="flip-card-back absolute w-full h-full bg-primary-50 dark:bg-primary-900/40 border-2 border-primary-400 rounded-xl flex flex-col items-center justify-center p-4 text-center">
+                                                            <span className="text-xs text-accent-500 font-bold uppercase">Formule / Signification</span>
+                                                            <div className="my-2"><FormulaRenderer formula={currentData.formulas[flashcardIndex].formula} /></div>
+                                                            <p className="text-xs text-gray-500 dark:text-gray-300">{currentData.formulas[flashcardIndex].desc}</p>
+                                                        </div>
+                                                    </div>
+                                                </div>
+                                            </div>
+                                            <div className="flex justify-between mt-4">
+                                                <button onClick={(e) => { e.stopPropagation(); setFlipped(false); setTimeout(() => setFlashcardIndex(i => (i - 1 + currentData.formulas.length) % currentData.formulas.length), 150); }} className="px-3 py-1.5 text-xs font-medium border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Précédent</button>
+                                                <button onClick={(e) => { e.stopPropagation(); setFlipped(false); setTimeout(() => setFlashcardIndex(i => (i + 1) % currentData.formulas.length), 150); }} className="px-3 py-1.5 text-xs font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700">Suivant</button>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        )}
+                    </main>
+
+                    <footer className="mt-12 border-t border-gray-200 dark:border-gray-800 py-6 text-center text-xs text-gray-500">
+                        <p>TechDrasa © 2026 - Conçu spécifiquement pour la préparation intensive du Baccalauréat Marocain (Option PC).</p>
+                    </footer>
+                </div>
+            );
+        };
+
+        const root = ReactDOM.createRoot(document.getElementById('root'));
+        root.render(<TechDrasa />);
+    </script>
+</body>
+</html>
