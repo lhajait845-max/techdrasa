@@ -1,513 +1,542 @@
-<!DOCTYPE html>
-<html lang="en" class="light">
+html_content = '''<!DOCTYPE html>
+<html lang="ar" dir="rtl">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>TechDrasa - Moroccan Student Learning Platform</title>
+    <title>TechDrasa AI - منصة مساعدة تلاميذ الباكالوريا</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
     <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Cairo:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
     <script>
         tailwind.config = {
             darkMode: 'class',
             theme: {
                 extend: {
+                    fontFamily: {
+                        cairo: ['Cairo', 'sans-serif'],
+                    },
                     colors: {
-                        primary: {
-                            50: '#f0f9ff',
-                            100: '#e0f2fe',
-                            500: '#0ea5e9',
-                            600: '#0284c7',
-                            700: '#0369a1',
-                            900: '#0c4a6e',
-                        },
-                        accent: {
-                            500: '#8b5cf6',
-                            600: '#7c3aed',
-                        }
+                        royal: { 50: '#eef2ff', 100: '#e0e7ff', 200: '#c7d2fe', 300: '#a5b4fc', 400: '#818cf8', 500: '#6366f1', 600: '#4f46e5', 700: '#4338ca', 800: '#3730a3', 900: '#312e81' },
+                        purple: { 50: '#faf5ff', 100: '#f3e8ff', 200: '#e9d5ff', 300: '#d8b4fe', 400: '#c084fc', 500: '#a855f7', 600: '#9333ea', 700: '#7e22ce', 800: '#6b21a8', 900: '#581c87' },
                     },
                     animation: {
-                        'fade-in': 'fadeIn 0.5s ease-out',
+                        'float': 'float 6s ease-in-out infinite',
+                        'pulse-slow': 'pulse 4s cubic-bezier(0.4, 0, 0.6, 1) infinite',
                         'slide-up': 'slideUp 0.5s ease-out',
-                        'pulse-slow': 'pulse 3s cubic-bezier(0.4, 0, 0.6, 1) infinite',
+                        'fade-in': 'fadeIn 0.3s ease-out',
+                        'typing': 'typing 1.5s ease-in-out infinite',
                     },
                     keyframes: {
-                        fadeIn: {
-                            '0%': { opacity: '0' },
-                            '100%': { opacity: '1' },
+                        float: {
+                            '0%, 100%': { transform: 'translateY(0px)' },
+                            '50%': { transform: 'translateY(-20px)' },
                         },
                         slideUp: {
                             '0%': { transform: 'translateY(20px)', opacity: '0' },
                             '100%': { transform: 'translateY(0)', opacity: '1' },
-                        }
-                    }
-                }
-            }
-        }
+                        },
+                        fadeIn: {
+                            '0%': { opacity: '0' },
+                            '100%': { opacity: '1' },
+                        },
+                        typing: {
+                            '0%, 100%': { opacity: '1' },
+                            '50%': { opacity: '0.4' },
+                        },
+                    },
+                },
+            },
+        };
     </script>
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Cairo:wght@400;600;700&display=swap');
-        
-        body {
-            font-family: 'Inter', 'Cairo', sans-serif;
+        body { font-family: 'Cairo', sans-serif; }
+        .glass {
+            background: rgba(255, 255, 255, 0.1);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.2);
         }
-        
-        .glass-panel {
-            background: rgba(255, 255, 255, 0.7);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.3);
+        .glass-dark {
+            background: rgba(15, 23, 42, 0.6);
+            backdrop-filter: blur(16px);
+            -webkit-backdrop-filter: blur(16px);
+            border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        
-        .dark .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
-            border: 1px solid rgba(255, 255, 255, 0.1);
-        }
-        
         .gradient-text {
-            background: linear-gradient(135deg, #0ea5e9 0%, #8b5cf6 100%);
+            background: linear-gradient(135deg, #6366f1, #a855f7, #ec4899);
             -webkit-background-clip: text;
             -webkit-text-fill-color: transparent;
             background-clip: text;
         }
-        
-        .card-hover {
-            transition: all 0.3s ease;
+        .gradient-bg {
+            background: linear-gradient(135deg, #1e1b4b 0%, #312e81 50%, #581c87 100%);
         }
-        
-        .card-hover:hover {
+        .chat-bubble-user {
+            background: linear-gradient(135deg, #4f46e5, #7c3aed);
+        }
+        .chat-bubble-bot {
+            background: rgba(255, 255, 255, 0.1);
+            border: 1px solid rgba(255, 255, 255, 0.15);
+        }
+        .dark .chat-bubble-bot {
+            background: rgba(30, 41, 59, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.08);
+        }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        .subject-card {
+            transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+        }
+        .subject-card:hover {
+            transform: translateY(-8px) scale(1.02);
+        }
+        .subject-card.active {
+            ring: 2px;
+            ring-color: #6366f1;
             transform: translateY(-4px);
-            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
         }
-        
-        .flip-card {
-            perspective: 1000px;
+        @keyframes shimmer {
+            0% { background-position: -200% 0; }
+            100% { background-position: 200% 0; }
         }
-        
-        .flip-card-inner {
-            transition: transform 0.6s;
-            transform-style: preserve-3d;
+        .shimmer {
+            background: linear-gradient(90deg, transparent, rgba(255,255,255,0.1), transparent);
+            background-size: 200% 100%;
+            animation: shimmer 2s infinite;
         }
-        
-        .flip-card.flipped .flip-card-inner {
-            transform: rotateY(180deg);
+        .typing-dot {
+            animation: typing 1.4s infinite;
         }
-        
-        .flip-card-front, .flip-card-back {
-            backface-visibility: hidden;
-            -webkit-backface-visibility: hidden;
-        }
-        
-        .flip-card-back {
-            transform: rotateY(180deg);
-        }
-        
-        .scrollbar-hide::-webkit-scrollbar {
-            display: none;
-        }
-        
-        .scrollbar-hide {
-            -ms-overflow-style: none;
-            scrollbar-width: none;
-        }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
     </style>
 </head>
-<body class="bg-gray-50 dark:bg-slate-900 text-gray-900 dark:text-gray-100 transition-colors duration-300">
+<body class="bg-slate-50 dark:bg-slate-900 transition-colors duration-500">
     <div id="root"></div>
-
     <script type="text/babel">
-        const { useState, useEffect } = React;
-        
+        const { useState, useEffect, useRef, useCallback } = React;
+
+        const mockResponses = {
+            math: [
+                "صافي خويا، هاد السؤال فالرياضيات خاصو شوية التركيز. خاصك تعرف بلي la fonction ln(x) كاتكون معرفة غير ل x > 0، و derivative ديالها هي 1/x. بلا ما تنسا هاد القاعدة فالامتحان!",
+                "هاد التمرين كايبان صعيب ولكن ساهل بزاف! خاصك تطبق la règle de dérivation: (u/v)' = (u'v - uv')/v². جرب تراجع التمارين ديال les dérivées ديال les fonctions rationnelles.",
+                "بالنسبة للمعادلات التفاضلية ديال type y' + ay = b، الحل العام كايكون y = Ce^(-ax) + b/a. هادي قاعدة أساسية فالباك PC، خاصك تحفظها مليح!",
+                "هاد السؤال كيتعلق بـ les suites numériques. خاصك تفهم الفرق بين suite arithmétique (u_n = u_0 + nr) و suite géométrique (u_n = u_0 * q^n). جرب تحسب limit ديال كل وحدة!",
+                "فالإحصاء، خاصك تعرف بلي l'espérance mathématique ديال variable aléatoire X كاتساوي Σ x_i * P(X=x_i). هاد القاعدة كاتجي فالتمرين ديال les probabilités بزاف.",
+                "بالنسبة للـ intégrales، تذكر بلي ∫(1/x)dx = ln|x| + C. ولا تنسa bli intégration par parties: ∫u'v = uv - ∫uv'. هادو الأساسيات ديال Calcul intégral!",
+                "هاد التمرين كايتطلب la factorisation ديال polynôme. جرب تلقى racines باستعمال le discriminant Δ = b² - 4ac. إلا كان Δ > 0، عندك deux racines réelles distinctes.",
+                "فالـ géométrie dans l'espace، خاصك تعرف bli le produit scalaire ديال deux vecteurs u و v كاتساوي u·v = ||u|| ||v|| cos(θ). هادي كاتخدّم باش تحسب l'angle entre deux droites!"
+            ],
+            physics: [
+                "صافي خويا، فالفيزياء هاد السؤال كايتعلق بـ la cinématique. تذكر bli v = v_0 + at و x = v_0t + ½at². هادو les équations horaires ديال mouvement rectiligne uniformément varié (MRUV).",
+                "هاد التمرين كيتعلق بـ les forces. خاصك تطبق le principe fondamental de la dynamique: ΣF = ma. حاول ترسم le bilan des forces و تحلّلهم على les axes!",
+                "بالنسبة للطاقة، تذكر bli l'énergie cinétique E_c = ½mv² و l'énergie potentielle de pesanteur E_pp = mgh. le théorème de l'énergie cinétique كايقول bli ΔE_c = W(ΣF_ext).",
+                "فالكهرباء، قانون d'Ohm كايقول bli U = RI. وla puissance électrique P = UI = RI² = U²/R. هادو أساسيات خاصك تكون عارفهم بالضبط!",
+                "هاد السؤال كيتعلق بـ les ondes. تذكر bli la relation v = λf، حيث v هي la célérité، λ هو la longueur d'onde، و f هي la fréquence. هادي كاتجي فالتمرين ديال les ondes progressives.",
+                "بالنسبة للمغناطيسية، قانون de Laplace كايقول bli la force électromagnétique F = IℓBsin(θ). خاصك تعرف bli la direction ديال F كاتعطيها la règle de la main droite!",
+                "فالديناميكا، le travail ديال force constante W = F·d·cos(α). إلا كانت القوة عمودية على displacement، le travail كايساوي صفر! هادي قاعدة مهمة بزاف.",
+                "هاد التمرين كيتعلق بـ la thermodynamique. تذكر le premier principe: ΔU = W + Q. و bli pour un gaz parfait, PV = nRT. هادو les relations fondamentales!"
+            ],
+            philosophy: [
+                "هاد السؤال الفلسفي عميق بزاف خويا. خاصك تبدأ بـ la définition du concept: الوعي هو la conscience de soi و la conscience du monde. كايمكن نعتبرو la condition de possibilité ديال toute connaissance.",
+                "فالفلسفة، هاد الموضوع كايتعلق بـ la liberté. خاصك تناقش بين la liberté comme autonomie (Kant) و la liberté comme puissance (Spinoza). واش الإنسان حر فعلاً ولا مكبل بالضرورة؟",
+                "هاد السؤال كايتعلق بـ l'État. خاصك تفكر فـ le contrat social ديال Rousseau: l'État كايتشكل باش يحافظ على les libertés individuelles. ولكن واش l'État كيصير آلة ديال القمع؟",
+                "بالنسبة للعلم، خاصك تناقش la distinction entre le savoir scientifique و le savoir commun. العلم كايتميز بـ la méthode expérimentale و la réfutabilité (Popper).",
+                "هاد الموضوع كايتعلق بـ l'art. خاصك تسول راسك: واش l'art كايعبر على la vérité ولا كايكون غير illusion؟ Plato كايعتبر l'art mimesis، بينما Hegel كايعتبرو manifestation de l'Esprit.",
+                "فالأخلاق، خاصك تفهم la distinction entre le devoir et l'intérêt. Kant كايقول bli la moralité خاصها تكون basée على le devoir pure، بينما les utilitaristes كايعتبرو l'intérêt général هو المعيار.",
+                "هاد السؤال كايتعلق بـ la technique. Heidegger كايعتبر bli la technique كاتحول l'homme إلى standing reserve. واش التكنولوجيا كاتحرر الإنسان ولا كاتستعبرو؟",
+                "بالنسبة للدين، خاصك تناقش la relation entre la foi et la raison. Pascal كايدافع على le pari de Pascal: إلا كنت مؤمن و الخر كانت صحيحة، ربحتي l'infini!"
+            ]
+        };
+
+        const subjects = [
+            {
+                id: 'math',
+                name: 'الرياضيات',
+                nameFr: 'Mathématiques',
+                icon: 'Calculator',
+                color: 'from-blue-500 to-indigo-600',
+                bgColor: 'bg-blue-500/10',
+                borderColor: 'border-blue-500/30',
+                description: 'الدوال، التفاضل، التكامل، المتتاليات، الإحصاء',
+                prompt: 'أنت مساعد ذكي متخصص في الرياضيات للباكالوريا المغربية (PC). تشرح بالدارجة المغربية مع المصطلحات الفرنسية العلمية. أعطِ أمثلة تطبيقية ونصائح للامتحان الوطني.'
+            },
+            {
+                id: 'physics',
+                name: 'الفيزياء',
+                nameFr: 'Physique-Chimie',
+                icon: 'Atom',
+                color: 'from-purple-500 to-violet-600',
+                bgColor: 'bg-purple-500/10',
+                borderColor: 'border-purple-500/30',
+                description: 'الميكانيك، الكهرباء، المغناطيسية، الديناميكا',
+                prompt: 'أنت مساعد ذكي متخصص في الفيزياء والكيمياء للباكالوريا المغربية (PC). تشرح بالدارجة المغربية مع المصطلحات الفرنسية العلمية. أعطِ تطبيقات عملية ونصائح للامتحان الوطني.'
+            },
+            {
+                id: 'philosophy',
+                name: 'الفلسفة',
+                nameFr: 'Philosophie',
+                icon: 'Brain',
+                color: 'from-rose-500 to-pink-600',
+                bgColor: 'bg-rose-500/10',
+                borderColor: 'border-rose-500/30',
+                description: 'الوجود، الوعي، الحرية، الدولة، العلم، الفن',
+                prompt: 'أنت مساعد ذكي متخصص في الفلسفة للباكالوريا المغربية. تشرح بالعربية الفصحى والدارجة المغربية. تناقش الأفكار الفلسفية الكبرى مع الإشارة إلى الفلاسفة (Plato, Kant, Hegel, Sartre...) ونصائح للامتحان الوطني.'
+            }
+        ];
+
         const Icons = {
-            Sun: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="4"/><path d="M12 2v2"/><path d="M12 20v2"/><path d="m4.93 4.93 1.41 1.41"/><path d="m17.66 17.66 1.41 1.41"/><path d="M2 12h2"/><path d="M20 12h2"/><path d="m6.34 17.66-1.41 1.41"/><path d="m19.07 4.93-1.41 1.41"/></svg>,
-            Moon: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z"/></svg>,
-            Upload: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" x2="12" y1="3" y2="15"/></svg>,
-            BookOpen: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z"/><path d="M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z"/></svg>,
-            Calculator: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><rect width="16" height="20" x="4" y="2" rx="2"/><line x1="8" x2="16" y1="6" y2="6"/><line x1="16" x2="16" y1="14" y2="18"/><path d="M16 10h.01"/><path d="M12 10h.01"/><path d="M8 10h.01"/><path d="M12 14h.01"/><path d="M8 14h.01"/><path d="M12 18h.01"/><path d="M8 18h.01"/></svg>,
-            Atom: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><circle cx="12" cy="12" r="1"/><path d="M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z"/></svg>,
-            Brain: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M9.5 2A2.5 2.5 0 0 1 12 4.5v15a2.5 2.5 0 0 1-4.96.44 2.5 2.5 0 0 1-2.96-3.08 3 3 0 0 1-.34-5.58 2.5 2.5 0 0 1 1.32-4.24 2.5 2.5 0 0 1 1.98-3A2.5 2.5 0 0 1 9.5 2Z"/></svg>,
-            Sparkles: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/></svg>,
-            ChevronRight: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="m9 18 6-6-6-6"/></svg>,
-            RotateCcw: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M3 12a9 9 0 1 0 9-9 9.75 9.75 0 0 0-6.74 2.74L3 12"/></svg>,
-            Check: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M20 6 9 17l-5-5"/></svg>,
-            X: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M18 6 6 18"/><path d="m6 6 12 12"/></svg>,
-            Zap: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"/></svg>,
-            Trophy: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M4 22h16"/><path d="M18 2H6v7a6 6 0 0 0 12 0V2Z"/></svg>,
-            GraduationCap: () => <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round"><path d="M22 10v6M2 10l10-5 10 5-10 5z"/><path d="M6 12v5c0 2 2 3 6 3s6-1 6-3v-5"/></svg>
+            Calculator: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('rect', { width: '16', height: '20', x: '4', y: '2', rx: '2' }), React.createElement('line', { x1: '8', x2: '16', y1: '6', y2: '6' }), React.createElement('line', { x1: '16', x2: '16', y1: '14', y2: '18' }), React.createElement('path', { d: 'M16 10h.01' }), React.createElement('path', { d: 'M12 10h.01' }), React.createElement('path', { d: 'M8 10h.01' }), React.createElement('path', { d: 'M12 14h.01' }), React.createElement('path', { d: 'M8 14h.01' }), React.createElement('path', { d: 'M12 18h.01' }), React.createElement('path', { d: 'M8 18h.01' })),
+            Atom: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('circle', { cx: '12', cy: '12', r: '1' }), React.createElement('path', { d: 'M20.2 20.2c2.04-2.03.02-7.36-4.5-11.9-4.54-4.52-9.87-6.54-11.9-4.5-2.04 2.03-.02 7.36 4.5 11.9 4.54 4.52 9.87 6.54 11.9 4.5Z' }), React.createElement('path', { d: 'M15.546 15.546c2.54-2.54 2.54-6.656 0-9.196s-6.656-2.54-9.196 0-2.54 6.656 0 9.196 6.656 2.54 9.196 0Z' }), React.createElement('path', { d: 'M20.2 3.8c-2.03-2.04-7.36-.02-11.9 4.5-4.52 4.54-6.54 9.87-4.5 11.9 2.03 2.04 7.36.02 11.9-4.5 4.52-4.54 6.54-9.87 4.5-11.9Z' })),
+            Brain: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M12 5a3 3 0 1 0-5.997.125 4 4 0 0 0-2.526 5.77 4 4 0 0 0 .556 6.588A4 4 0 1 0 12 18Z' }), React.createElement('path', { d: 'M12 5a3 3 0 1 1 5.997.125 4 4 0 0 1 2.526 5.77 4 4 0 0 1-.556 6.588A4 4 0 1 1 12 18Z' }), React.createElement('path', { d: 'M15 13a4.5 4.5 0 0 1-3-4 4.5 4.5 0 0 1-3 4' }), React.createElement('path', { d: 'M17.599 6.5a3 3 0 0 0 .399-1.375' }), React.createElement('path', { d: 'M6.003 5.125A3 3 0 0 0 6.401 6.5' }), React.createElement('path', { d: 'M3.477 10.896a4 4 0 0 1 .585-.396' }), React.createElement('path', { d: 'M19.938 10.5a4 4 0 0 1 .585.396' }), React.createElement('path', { d: 'M6 18a4 4 0 0 1-1.967-.516' }), React.createElement('path', { d: 'M19.967 17.484A4 4 0 0 1 18 18' })),
+            Moon: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M12 3a6 6 0 0 0 9 9 9 9 0 1 1-9-9Z' })),
+            Sun: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('circle', { cx: '12', cy: '12', r: '4' }), React.createElement('path', { d: 'M12 2v2' }), React.createElement('path', { d: 'M12 20v2' }), React.createElement('path', { d: 'm4.93 4.93 1.41 1.41' }), React.createElement('path', { d: 'm17.66 17.66 1.41 1.41' }), React.createElement('path', { d: 'M2 12h2' }), React.createElement('path', { d: 'M20 12h2' }), React.createElement('path', { d: 'm6.34 17.66-1.41 1.41' }), React.createElement('path', { d: 'm19.07 4.93-1.41 1.41' })),
+            Send: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'm22 2-7 20-4-9-9-4Z' }), React.createElement('path', { d: 'M22 2 11 13' })),
+            Bot: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M12 8V4H8' }), React.createElement('rect', { width: '16', height: '12', x: '4', y: '8', rx: '2' }), React.createElement('path', { d: 'M2 14h2' }), React.createElement('path', { d: 'M20 14h2' }), React.createElement('path', { d: 'M15 13v2' }), React.createElement('path', { d: 'M9 13v2' })),
+            User: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M19 21v-2a4 4 0 0 0-4-4H9a4 4 0 0 0-4 4v2' }), React.createElement('circle', { cx: '12', cy: '7', r: '4' })),
+            Sparkles: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'm12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z' }), React.createElement('path', { d: 'M5 3v4' }), React.createElement('path', { d: 'M19 17v4' }), React.createElement('path', { d: 'M3 5h4' }), React.createElement('path', { d: 'M17 19h4' })),
+            GraduationCap: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M22 10v6' }), React.createElement('path', { d: 'M2 10l10-5 10 5-10 5z' }), React.createElement('path', { d: 'M6 12v5c0 2 2 3 6 3s6-1 6-3v-5' })),
+            Clock: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }), React.createElement('polyline', { points: '12 6 12 12 16 14' })),
+            BookOpen: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M2 3h6a4 4 0 0 1 4 4v14a3 3 0 0 0-3-3H2z' }), React.createElement('path', { d: 'M22 3h-6a4 4 0 0 0-4 4v14a3 3 0 0 1 3-3h7z' })),
+            MessageCircle: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'M7.9 20A9 9 0 1 0 4 16.1L2 22Z' })),
+            ChevronDown: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('path', { d: 'm6 9 6 6 6-6' })),
+            Target: () => React.createElement('svg', { xmlns: 'http://www.w3.org/2000/svg', width: '24', height: '24', viewBox: '0 0 24 24', fill: 'none', stroke: 'currentColor', strokeWidth: '2', strokeLinecap: 'round', strokeLinejoin: 'round' }, React.createElement('circle', { cx: '12', cy: '12', r: '10' }), React.createElement('circle', { cx: '12', cy: '12', r: '6' }), React.createElement('circle', { cx: '12', cy: '12', r: '2' })),
         };
 
-        // Custom Moroccan Baccalaureate (PC Branch) Data
-        const mockSummaries = {
-            math: [
-                "Continuité et Dérivabilité: Une fonction f est continue en a si la limite quand x tend vers a est égale à f(a).",
-                "Théorème des Valeurs Intermédiaires (TVI): Si f est continue et strictement monotone sur [a,b], alors pour tout y entre f(a) et f(b), l'équation f(x)=y admet une unique solution.",
-                "Nombres Complexes: Tout nombre complexe s'écrit sous forme algébrique z = x + iy, ou trigonométrique z = r(cos θ + i sin θ).",
-                "Suites Numériques: Une suite est convergente si elle admet une limite finie. Toute suite croissante et majorée est convergente.",
-                "Fonctions Logarithme et Exponentielle: ln(x) est définie sur ]0, +∞[ et c'est la réciproque de la fonction e^x."
-            ],
-            physics: [
-                "Circuit RC: Caractérisé par la constante de temps τ = RC. L'équation différentielle en uc vérifie uc + RC(duc/dt) = E.",
-                "Circuit RL: Comportement de la bobine qui s'oppose à l'établissement du courant. Constante de temps τ = L/R.",
-                "Circuit RLC en série: Présence d'oscillations libres amorties (pseudo-périodiques). La résistance globale provoque une perte d'énergie par effet Joule.",
-                "Mécanique (Lois de Newton): Le vecteur accélération d'un solide de masse m dans un référentiel galiléen vérifie ΣF = m.a.",
-                "Suivi temporel d'une réaction chimique: La vitesse volumique est maximale à t=0 et diminue au cours du temps à cause de la diminution des concentrations des réactifs."
-            ],
-            philosophy: [
-                "الشخص والهوية: ما الذي يحدد هوية الشخص؟ هل هو العقل وتطابق الذكرى (جون لوك) أم الإرادة (شوبنهاور) أم الوعي والتفكير (ديكارت)؟",
-                "الشخص بين الضرورة والحرية: هل الشخص كائن حر في تصرفاته أم أنه خاضع لحتميات طبيعية، اجتماعية ونفسية (سبينوزا وفرويد)؟",
-                "الغير (وجود الغير): هل وجود الغير شرط ضروري لوعي الذات بوجودها (سارتر) أم أنه مجرد وجود تهديدي يعزلوها عن حريتها؟",
-                "المعرفة العلمية والنظرية والتجربة: بناء المعرفة العلمية يتأرجح بين العقلانية العلمية (العقل) وبين التجريبية الواقعية (المختبر).",
-                "الدولة (مشروعية الدولة وغاياتها): هل غاية الدولة هي توفير الحرية والأمن للمواطنين (سبينوزا) أم أنها أداة سيطرة وعنف (ماركس)؟"
-            ]
-        };
+        function Navbar({ darkMode, toggleDarkMode }) {
+            return React.createElement('nav', { className: 'fixed top-0 left-0 right-0 z-50 glass dark:glass-dark border-b border-white/10 dark:border-white/5' },
+                React.createElement('div', { className: 'max-w-7xl mx-auto px-4 sm:px-6 lg:px-8' },
+                    React.createElement('div', { className: 'flex items-center justify-between h-16' },
+                        React.createElement('div', { className: 'flex items-center gap-3' },
+                            React.createElement('div', { className: 'w-10 h-10 rounded-xl bg-gradient-to-br from-royal-500 to-purple-600 flex items-center justify-center shadow-lg shadow-royal-500/30' },
+                                React.createElement(Icons.Sparkles, { className: 'w-5 h-5 text-white' })
+                            ),
+                            React.createElement('div', { className: 'flex flex-col' },
+                                React.createElement('span', { className: 'text-xl font-bold gradient-text leading-tight' }, 'TechDrasa AI'),
+                                React.createElement('span', { className: 'text-[10px] text-slate-500 dark:text-slate-400 font-medium -mt-1' }, 'Bac PC - Option Français')
+                            )
+                        ),
+                        React.createElement('div', { className: 'flex items-center gap-4' },
+                            React.createElement('button', {
+                                onClick: toggleDarkMode,
+                                className: 'p-2.5 rounded-xl bg-white/10 dark:bg-slate-800/50 hover:bg-white/20 dark:hover:bg-slate-700/50 transition-all duration-300 border border-white/20 dark:border-white/10'
+                            }, darkMode ? React.createElement(Icons.Sun, { className: 'w-5 h-5 text-amber-400' }) : React.createElement(Icons.Moon, { className: 'w-5 h-5 text-slate-600' }))
+                        )
+                    )
+                )
+            );
+        }
 
-        const mockFormulas = {
-            math: [
-                { name: "Forme Trigonométrique", formula: "z = r(\\cos \\theta + i \\sin \\theta)", desc: "Avec r = |z| et \\theta = arg(z)" },
-                { name: "Formule de Moivre", formula: "(\\cos \\theta + i \\sin \\theta)^n = \\cos(n\\theta) + i \\sin(n\\theta)", desc: "Utile pour la linéarisation" },
-                { name: "Limite Usuelle Exponentielle", formula: "\\lim_{x \\to 0} \\frac{e^x - 1}{x} = 1", desc: "Limite de base indispensable" },
-                { name: "Suite Géométrique", formula: "u_n = u_p \\times q^{n-p}", desc: "Expression générale en fonction de n" }
-            ],
-            physics: [
-                { name: "Énergie Condensateur", formula: "E_e = \\frac{1}{2} C \\cdot u_C^2", desc: "Énergie électrique emmagasinée dans un condensateur" },
-                { name: "Équation Différentielle (RC)", formula: "u_C + \\tau \\frac{du_C}{dt} = E", desc: "Avec \\tau = RC (constante de temps)" },
-                { name: "Période Propre (LC)", formula: "T_0 = 2\\pi \\sqrt{L \\cdot C}", desc: "Période des oscillations idéales non amorties" },
-                { name: "Deuxième loi de Newton", formula: "\\sum \\vec{F}_{ext} = m \\cdot \\vec{a}_g", desc: "Valable uniquement dans un référentiel galiléen" }
-            ],
-            philosophy: [
-                { name: "الكوجيتو الديكارتي", formula: "\\text{أنا أفكر} \\therefore \\text{أنا موجود}", desc: "أساس هوية الشخص والوعي عند رينيه ديكارت" },
-                { name: "الحتمية السبينوزية", formula: "\\text{الحرية} = \\text{وعي بالضرورة}", desc: "الإنسان يظن نفسه حراً لكنه يجهل الأسباب الموجهة له" },
-                { name: "مفارقة وجود الغير", formula: "\\text{الغير} = \\text{الوسيط الضروري بيني وبين ذاتي}", desc: "أطروحة جان بول سارتر في الوجود والعدم" }
-            ]
-        };
-
-        const mockQuiz = {
-            math: [
-                { q: "Quelle est la limite de ln(x)/x quand x tend vers +∞?", a: "0", options: ["0", "+∞", "1", "-∞"] },
-                { q: "Si z = 1 + i, quel est son module |z|?", a: "√2", options: ["1", "2", "√2", "0"] },
-                { q: "Une suite croissante et majorée est toujours...?", a: "Convergente", options: ["Divergente", "Convergente", "Nulle", "Infinie"] }
-            ],
-            physics: [
-                { q: "Quelle est l'unité de la constante de temps τ?", a: "Seconde (s)", options: ["Farad", "Ohm", "Seconde (s)", "Volt"] },
-                { q: "Dans un circuit RLC, l'amortissement est dû à :", a: "La résistance", options: ["Le condensateur", "La bobine", "La résistance", "Le générateur"] },
-                { q: "Quelle est l'expression de la force de frottement fluide aux faibles vitesses?", a: "f = -k.v", options: ["f = -k.v", "f = -k.v²", "f = m.g", "f = P/t"] }
-            ],
-            philosophy: [
-                { q: "من هو الفيلسوف الذي يربط هوية الشخص بالذاكرة والوعي التجريبي؟", a: "جون لوك", options: ["ديكارت", "جون لوك", "شوبنهاور", "سبينوزا"] },
-                { q: "يرى سبينوزا أن القول بأن الإنسان حر تماماً هو مجرد :", a: "وهم", options: ["حقيقة مطلقة", "وهم", "واجب أخلاقي", "ضرورة سياسية"] },
-                { q: "ما هي الأداة التي تعتبرها بعض المواقف (مثل ماكس فيبر) احتكاراً مشروعاً للدولة؟", a: "العنف المشرووع", options: ["العنف المشرووع", "المال", "الدين", "العدالة المطلقة"] }
-            ]
-        };
-
-        const FormulaRenderer = ({ formula }) => {
-            const formatted = formula
-                .replace(/\\frac\{([^}]+)\}\{([^}]+)\}/g, '<span class="inline-flex flex-col items-center mx-1"><span class="border-b border-current px-1">$1</span><span class="px-1">$2</span></span>')
-                .replace(/\\sqrt\{([^}]+)\}/g, '√<span class="border-t border-current inline-block px-1">$1</span>')
-                .replace(/\^(\d+)/g, '<sup>$1</sup>')
-                .replace(/\^(\{[^}]+\})/g, (m, p1) => `<sup>${p1.slice(1,-1)}</sup>`)
-                .replace(/\\vec\{([^}]+)\}/g, '<span class="overline">$1</span>')
-                .replace(/\\times/g, '×')
-                .replace(/\\cdot/g, '·')
-                .replace(/\\theta/g, 'θ')
-                .replace(/\\cos/g, 'cos')
-                .replace(/\\sin/g, 'sin')
-                .replace(/\\pi/g, 'π')
-                .replace(/\\tau/g, 'τ')
-                .replace(/\\therefore/g, '∴')
-                .replace(/\\text\{([^}]+)\}/g, '$1')
-                .replace(/\\lim_\{([^}]+)\}/g, 'lim<sub>$1</sub>')
-                .replace(/\\to/g, '→')
-                .replace(/\\sum/g, 'Σ');
-            
-            return <span dangerouslySetInnerHTML={{ __html: formatted }} className="font-serif text-lg" />;
-        };
-
-        const TechDrasa = () => {
-            const [darkMode, setDarkMode] = useState(false);
-            const [activeTab, setActiveTab] = useState('upload');
-            const [selectedSubject, setSelectedSubject] = useState(null);
-            const [uploadedText, setUploadedText] = useState('');
-            const [isProcessing, setIsProcessing] = useState(false);
-            const [showDashboard, setShowDashboard] = useState(false);
-            const [currentData, setCurrentData] = useState(null);
-            const [flashcardIndex, setFlashcardIndex] = useState(0);
-            const [flipped, setFlipped] = useState(false);
-            const [quizIndex, setQuizIndex] = useState(0);
-            const [selectedAnswer, setSelectedAnswer] = useState(null);
-            const [score, setScore] = useState(0);
-            const [showResult, setShowResult] = useState(false);
-            const [streak, setStreak] = useState(0);
+        function CountdownTimer() {
+            const [timeLeft, setTimeLeft] = useState({ days: 0, hours: 0, minutes: 0, seconds: 0 });
 
             useEffect(() => {
-                if (darkMode) document.documentElement.classList.add('dark');
-                else document.documentElement.classList.remove('dark');
-            }, [darkMode]);
+                const examDate = new Date('2026-06-15T08:00:00');
+                const interval = setInterval(() => {
+                    const now = new Date();
+                    const diff = examDate - now;
+                    if (diff > 0) {
+                        setTimeLeft({
+                            days: Math.floor(diff / (1000 * 60 * 60 * 24)),
+                            hours: Math.floor((diff % (1000 * 60 * 60 * 24)) / (1000 * 60 * 60)),
+                            minutes: Math.floor((diff % (1000 * 60 * 60)) / (1000 * 60)),
+                            seconds: Math.floor((diff % (1000 * 60)) / 1000)
+                        });
+                    }
+                }, 1000);
+                return () => clearInterval(interval);
+            }, []);
 
-            const subjects = [
-                { id: 'math', name: 'Mathématiques', icon: Icons.Calculator, gradient: 'from-blue-500 to-cyan-400' },
-                { id: 'physics', name: 'Physique-Chimie', icon: Icons.Atom, gradient: 'from-purple-500 to-pink-400' },
-                { id: 'philosophy', name: 'الفلسفة', icon: Icons.Brain, gradient: 'from-emerald-500 to-teal-400' }
+            const TimeBox = ({ value, label }) => React.createElement('div', { className: 'flex flex-col items-center' },
+                React.createElement('div', { className: 'w-16 h-16 sm:w-20 sm:h-20 rounded-2xl glass dark:glass-dark flex items-center justify-center border border-white/20 dark:border-white/10 shadow-lg' },
+                    React.createElement('span', { className: 'text-2xl sm:text-3xl font-bold text-white' }, String(value).padStart(2, '0'))
+                ),
+                React.createElement('span', { className: 'text-xs sm:text-sm text-white/70 mt-2 font-medium' }, label)
+            );
+
+            return React.createElement('div', { className: 'flex gap-3 sm:gap-4 justify-center' },
+                React.createElement(TimeBox, { value: timeLeft.days, label: 'يوم' }),
+                React.createElement(TimeBox, { value: timeLeft.hours, label: 'ساعة' }),
+                React.createElement(TimeBox, { value: timeLeft.minutes, label: 'دقيقة' }),
+                React.createElement(TimeBox, { value: timeLeft.seconds, label: 'ثانية' })
+            );
+        }
+
+        function HeroSection() {
+            return React.createElement('section', { className: 'relative pt-32 pb-20 overflow-hidden' },
+                React.createElement('div', { className: 'absolute inset-0 gradient-bg' }),
+                React.createElement('div', { className: 'absolute inset-0 opacity-30' },
+                    React.createElement('div', { className: 'absolute top-20 left-10 w-72 h-72 bg-royal-500/30 rounded-full blur-3xl animate-float' }),
+                    React.createElement('div', { className: 'absolute bottom-20 right-10 w-96 h-96 bg-purple-500/20 rounded-full blur-3xl animate-float', style: { animationDelay: '2s' } }),
+                    React.createElement('div', { className: 'absolute top-1/2 left-1/2 w-64 h-64 bg-pink-500/20 rounded-full blur-3xl animate-float', style: { animationDelay: '4s' } })
+                ),
+                React.createElement('div', { className: 'relative max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 text-center' },
+                    React.createElement('div', { className: 'inline-flex items-center gap-2 px-4 py-2 rounded-full glass mb-8 border border-white/20' },
+                        React.createElement(Icons.GraduationCap, { className: 'w-4 h-4 text-royal-300' }),
+                        React.createElement('span', { className: 'text-sm text-white/90 font-medium' }, 'الباكالوريا 2026 - مسلك العلوم الفيزيائية')
+                    ),
+                    React.createElement('h1', { className: 'text-4xl sm:text-5xl lg:text-7xl font-black text-white mb-6 leading-tight' },
+                        'جهز راسك للباك',
+                        React.createElement('br', null),
+                        React.createElement('span', { className: 'text-transparent bg-clip-text bg-gradient-to-r from-royal-300 via-purple-300 to-pink-300' }, 'مع الذكاء الاصطناعي')
+                    ),
+                    React.createElement('p', { className: 'text-lg sm:text-xl text-white/70 max-w-2xl mx-auto mb-12 leading-relaxed' },
+                        'منصة TechDrasa AI كتساعدك فالرياضيات، الفيزياء، والفلسفة. شات ذكي، شروحات بالدارجة، ونصائح للامتحان الوطني.'
+                    ),
+                    React.createElement(CountdownTimer, null),
+                    React.createElement('p', { className: 'text-white/50 text-sm mt-6' }, 'الامتحان الوطني - يونيو 2026')
+                )
+            );
+        }
+
+        function ChatMessage({ message }) {
+            const isUser = message.role === 'user';
+            return React.createElement('div', {
+                className: `flex gap-3 ${isUser ? 'flex-row' : 'flex-row-reverse'} animate-slide-up`
+            },
+                React.createElement('div', {
+                    className: `w-8 h-8 rounded-full flex items-center justify-center flex-shrink-0 ${isUser ? 'bg-gradient-to-br from-royal-500 to-purple-600' : 'bg-slate-200 dark:bg-slate-700'}`
+                }, isUser ? React.createElement(Icons.User, { className: 'w-4 h-4 text-white' }) : React.createElement(Icons.Bot, { className: 'w-4 h-4 text-slate-600 dark:text-slate-300' })),
+                React.createElement('div', {
+                    className: `max-w-[85%] sm:max-w-[75%] rounded-2xl px-4 py-3 text-sm leading-relaxed ${isUser ? 'chat-bubble-user text-white rounded-tr-sm' : 'chat-bubble-bot text-slate-800 dark:text-slate-200 rounded-tl-sm'}`
+                }, message.content)
+            );
+        }
+
+        function TypingIndicator() {
+            return React.createElement('div', { className: 'flex gap-3 flex-row-reverse animate-fade-in' },
+                React.createElement('div', { className: 'w-8 h-8 rounded-full bg-slate-200 dark:bg-slate-700 flex items-center justify-center flex-shrink-0' },
+                    React.createElement(Icons.Bot, { className: 'w-4 h-4 text-slate-600 dark:text-slate-300' })
+                ),
+                React.createElement('div', { className: 'chat-bubble-bot rounded-2xl rounded-tl-sm px-4 py-3 flex items-center gap-1' },
+                    React.createElement('div', { className: 'w-2 h-2 rounded-full bg-royal-500 typing-dot' }),
+                    React.createElement('div', { className: 'w-2 h-2 rounded-full bg-royal-500 typing-dot' }),
+                    React.createElement('div', { className: 'w-2 h-2 rounded-full bg-royal-500 typing-dot' })
+                )
+            );
+        }
+
+        function ChatSection({ activeSubject }) {
+            const [messages, setMessages] = useState([
+                { role: 'assistant', content: `مرحبا بك فـ TechDrasa AI! 🎓\n\nأنا هنا باش نساعدك فمادة ${activeSubject.name}. سولني أي سؤال بغيتي، وغادي نجاوبك بالدارجة مع المصطلحات العلمية.\n\nنصيحة: جرب تسول على التمارين الصعاب، القواعد اللي خاصك تحفظهم، أو نصائح للامتحان الوطني!` }
+            ]);
+            const [input, setInput] = useState('');
+            const [isTyping, setIsTyping] = useState(false);
+            const messagesEndRef = useRef(null);
+            const inputRef = useRef(null);
+
+            const scrollToBottom = () => {
+                messagesEndRef.current?.scrollIntoView({ behavior: 'smooth' });
+            };
+
+            useEffect(() => {
+                scrollToBottom();
+            }, [messages, isTyping]);
+
+            useEffect(() => {
+                setMessages([
+                    { role: 'assistant', content: `مرحبا بك فـ TechDrasa AI! 🎓\n\nأنا هنا باش نساعدك فمادة ${activeSubject.name}. سولني أي سؤال بغيتي، وغادي نجاوبك بالدارجة مع المصطلحات العلمية.\n\nنصيحة: جرب تسول على التمارين الصعاب، القواعد اللي خاصك تحفظهم، أو نصائح للامتحان الوطني!` }
+                ]);
+            }, [activeSubject.id]);
+
+            const handleSend = useCallback(() => {
+                if (!input.trim() || isTyping) return;
+                const userMessage = input.trim();
+                setInput('');
+                setMessages(prev => [...prev, { role: 'user', content: userMessage }]);
+                setIsTyping(true);
+
+                setTimeout(() => {
+                    const responses = mockResponses[activeSubject.id];
+                    const randomResponse = responses[Math.floor(Math.random() * responses.length)];
+                    setMessages(prev => [...prev, { role: 'assistant', content: randomResponse }]);
+                    setIsTyping(false);
+                }, 1500);
+            }, [input, isTyping, activeSubject.id]);
+
+            const handleKeyPress = (e) => {
+                if (e.key === 'Enter' && !e.shiftKey) {
+                    e.preventDefault();
+                    handleSend();
+                }
+            };
+
+            return React.createElement('section', { className: 'py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto' },
+                React.createElement('div', { className: 'text-center mb-10' },
+                    React.createElement('div', { className: 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-royal-50 dark:bg-royal-900/20 border border-royal-200 dark:border-royal-800 mb-4' },
+                        React.createElement(Icons.MessageCircle, { className: 'w-4 h-4 text-royal-600 dark:text-royal-400' }),
+                        React.createElement('span', { className: 'text-sm font-medium text-royal-700 dark:text-royal-300' }, 'الشات الذكي')
+                    ),
+                    React.createElement('h2', { className: 'text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3' },
+                        'سولني أي حاجة ف',
+                        React.createElement('span', { className: 'text-royal-600 dark:text-royal-400' }, ` ${activeSubject.name}`)
+                    ),
+                    React.createElement('p', { className: 'text-slate-500 dark:text-slate-400' }, `المساعد الذكي متخصص ف${activeSubject.name} - جاوبك فأقل من ثانية`)
+                ),
+                React.createElement('div', { className: 'rounded-3xl overflow-hidden shadow-2xl shadow-royal-500/10 border border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800' },
+                    React.createElement('div', { className: 'h-[500px] overflow-y-auto p-4 sm:p-6 space-y-4 scrollbar-hide' },
+                        messages.map((msg, idx) => React.createElement(ChatMessage, { key: idx, message: msg })),
+                        isTyping && React.createElement(TypingIndicator, null),
+                        React.createElement('div', { ref: messagesEndRef })
+                    ),
+                    React.createElement('div', { className: 'border-t border-slate-200 dark:border-slate-700 p-4 bg-slate-50 dark:bg-slate-900/50' },
+                        React.createElement('div', { className: 'flex gap-3' },
+                            React.createElement('div', { className: 'flex-1 relative' },
+                                React.createElement('textarea', {
+                                    ref: inputRef,
+                                    value: input,
+                                    onChange: (e) => setInput(e.target.value),
+                                    onKeyPress: handleKeyPress,
+                                    placeholder: `اكتب سؤالك ف${activeSubject.name}...`,
+                                    className: 'w-full rounded-2xl border border-slate-300 dark:border-slate-600 bg-white dark:bg-slate-800 px-4 py-3 text-sm text-slate-900 dark:text-white placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-royal-500 resize-none min-h-[48px] max-h-[120px]',
+                                    rows: 1,
+                                    style: { height: 'auto' }
+                                })
+                            ),
+                            React.createElement('button', {
+                                onClick: handleSend,
+                                disabled: !input.trim() || isTyping,
+                                className: 'px-4 py-3 rounded-2xl bg-gradient-to-r from-royal-600 to-purple-600 text-white hover:from-royal-700 hover:to-purple-700 transition-all duration-300 disabled:opacity-50 disabled:cursor-not-allowed shadow-lg shadow-royal-500/30 flex items-center justify-center'
+                            }, React.createElement(Icons.Send, { className: 'w-5 h-5' }))
+                        )
+                    )
+                )
+            );
+        }
+
+        function SubjectCard({ subject, isActive, onClick }) {
+            const IconComponent = Icons[subject.icon];
+            return React.createElement('button', {
+                onClick: onClick,
+                className: `subject-card relative w-full text-right rounded-3xl p-6 sm:p-8 border-2 transition-all duration-500 ${isActive ? `${subject.borderColor} ${subject.bgColor} ring-2 ring-royal-500/50` : 'border-slate-200 dark:border-slate-700 bg-white dark:bg-slate-800 hover:border-royal-300 dark:hover:border-royal-700'}`
+            },
+                isActive && React.createElement('div', { className: 'absolute top-4 left-4 w-3 h-3 rounded-full bg-green-500 animate-pulse' }),
+                React.createElement('div', { className: 'flex items-start gap-4' },
+                    React.createElement('div', { className: `w-14 h-14 rounded-2xl bg-gradient-to-br ${subject.color} flex items-center justify-center shadow-lg flex-shrink-0` },
+                        React.createElement(IconComponent, { className: 'w-7 h-7 text-white' })
+                    ),
+                    React.createElement('div', { className: 'flex-1' },
+                        React.createElement('h3', { className: 'text-xl font-bold text-slate-900 dark:text-white mb-1' }, subject.name),
+                        React.createElement('p', { className: 'text-xs text-slate-400 dark:text-slate-500 font-medium mb-2' }, subject.nameFr),
+                        React.createElement('p', { className: 'text-sm text-slate-500 dark:text-slate-400 leading-relaxed' }, subject.description)
+                    )
+                ),
+                isActive && React.createElement('div', { className: 'mt-4 pt-4 border-t border-royal-200 dark:border-royal-800/50' },
+                    React.createElement('div', { className: 'flex items-center gap-2 text-xs text-royal-600 dark:text-royal-400 font-medium' },
+                        React.createElement('div', { className: 'w-2 h-2 rounded-full bg-green-500' }),
+                        'الشات نشط - سولني الآن'
+                    )
+                )
+            );
+        }
+
+        function SubjectsSection({ activeSubject, setActiveSubject }) {
+            return React.createElement('section', { className: 'py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto' },
+                React.createElement('div', { className: 'text-center mb-12' },
+                    React.createElement('div', { className: 'inline-flex items-center gap-2 px-4 py-2 rounded-full bg-purple-50 dark:bg-purple-900/20 border border-purple-200 dark:border-purple-800 mb-4' },
+                        React.createElement(Icons.BookOpen, { className: 'w-4 h-4 text-purple-600 dark:text-purple-400' }),
+                        React.createElement('span', { className: 'text-sm font-medium text-purple-700 dark:text-purple-300' }, 'المواد الدراسية')
+                    ),
+                    React.createElement('h2', { className: 'text-3xl sm:text-4xl font-bold text-slate-900 dark:text-white mb-3' },
+                        'اختار المادة',
+                        React.createElement('span', { className: 'text-purple-600 dark:text-purple-400' }, ' اللي بغيتي')
+                    ),
+                    React.createElement('p', { className: 'text-slate-500 dark:text-slate-400 max-w-lg mx-auto' }, 'كل مادة كاتفعل system prompt خاص بالشات الذكي باش يجاوبك بشكل دقيق ومتخصص')
+                ),
+                React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
+                    subjects.map(subject => React.createElement(SubjectCard, {
+                        key: subject.id,
+                        subject: subject,
+                        isActive: activeSubject.id === subject.id,
+                        onClick: () => setActiveSubject(subject)
+                    }))
+                )
+            );
+        }
+
+        function FeaturesSection() {
+            const features = [
+                { icon: 'Target', title: 'شرح مخصص', desc: 'كل مادة كاتفعل AI prompt خاص بيها باش يجاوبك بشكل دقيق' },
+                { icon: 'Clock', title: 'رد فوري', desc: 'إجابات فورية فأقل من ثانية - ما كاينش الانتظار' },
+                { icon: 'Sparkles', title: 'دارجة + علم', desc: 'شروحات بالدارجة المغربية مع المصطلحات الفرنسية العلمية' },
             ];
 
-            const handleSubjectSelect = (subjectId) => {
-                setSelectedSubject(subjectId);
-                setUploadedText('');
-                setShowDashboard(false);
-            };
-
-            const handleProcess = () => {
-                if (!selectedSubject && !uploadedText.trim()) return;
-                setIsProcessing(true);
-                const subject = selectedSubject || 'physics';
-                
-                setTimeout(() => {
-                    setCurrentData({
-                        subject: subject,
-                        summary: mockSummaries[subject],
-                        formulas: mockFormulas[subject],
-                        quiz: mockQuiz[subject]
-                    });
-                    setIsProcessing(false);
-                    setShowDashboard(true);
-                    setActiveTab('dashboard');
-                    setFlashcardIndex(0);
-                    setQuizIndex(0);
-                    setScore(0);
-                    setStreak(0);
-                }, 1200);
-            };
-
-            const handleQuizAnswer = (answer) => {
-                setSelectedAnswer(answer);
-                const correct = answer === currentData.quiz[quizIndex].a;
-                if (correct) {
-                    setScore(s => s + 1);
-                    setStreak(s => s + 1);
-                } else {
-                    setStreak(0);
-                }
-                
-                setTimeout(() => {
-                    if (quizIndex < currentData.quiz.length - 1) {
-                        setQuizIndex(q => q + 1);
-                        setSelectedAnswer(null);
-                    } else {
-                        setShowResult(true);
-                    }
-                }, 1200);
-            };
-
-            const resetQuiz = () => {
-                setQuizIndex(0);
-                setScore(0);
-                setSelectedAnswer(null);
-                setShowResult(false);
-                setStreak(0);
-            };
-
-            const isRtl = currentData?.subject === 'philosophy';
-
-            return (
-                <div className="min-h-screen transition-colors duration-300">
-                    <nav className="sticky top-0 z-50 glass-panel border-b border-gray-200 dark:border-gray-700">
-                        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex justify-between h-16 items-center">
-                            <div className="flex items-center space-x-3">
-                                <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white font-bold text-xl shadow-lg">T</div>
-                                <div>
-                                    <h1 className="text-xl font-bold gradient-text">TechDrasa</h1>
-                                    <p className="text-xs text-gray-500 dark:text-gray-400">Bac National PC Prep</p>
-                                </div>
-                            </div>
-                            <div className="flex items-center space-x-4">
-                                <button onClick={() => setDarkMode(!darkMode)} className="p-2 rounded-lg hover:bg-gray-100 dark:hover:bg-gray-800 transition-colors">
-                                    {darkMode ? <Icons.Sun /> : <Icons.Moon />}
-                                </button>
-                                <div className="flex items-center bg-gray-100 dark:bg-gray-800 rounded-lg p-1">
-                                    <button onClick={() => setActiveTab('upload')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'upload' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'}`}>Préparer</button>
-                                    {showDashboard && <button onClick={() => setActiveTab('dashboard')} className={`px-4 py-2 rounded-md text-sm font-medium transition-all ${activeTab === 'dashboard' ? 'bg-white dark:bg-gray-700 shadow-sm text-primary-600 dark:text-primary-400' : 'text-gray-600 dark:text-gray-400'}`}>Dashboard</button>}
-                                </div>
-                            </div>
-                        </div>
-                    </nav>
-
-                    <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-                        {activeTab === 'upload' && (
-                            <div className="animate-fade-in space-y-8">
-                                <div className="text-center space-y-4 py-8">
-                                    <div className="inline-flex items-center space-x-2 px-4 py-2 rounded-full bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 text-sm font-medium mb-2">
-                                        <Icons.Sparkles /> <span>Révision Intelligente pour le Bac National</span>
-                                    </div>
-                                    <h2 className="text-3xl md:text-5xl font-bold text-gray-900 dark:text-white">Préparez votre <span className="gradient-text">Bac PC 2026</span></h2>
-                                    <p className="text-md text-gray-600 dark:text-gray-400 max-w-2xl mx-auto">Choisissez une matière pour charger le contenu du programme marocain officiel ou collez directement votre cours.</p>
-                                </div>
-
-                                <div className="grid grid-cols-1 md:grid-cols-3 gap-6 max-w-4xl mx-auto">
-                                    {subjects.map((subj) => {
-                                        const Icon = subj.icon;
-                                        return (
-                                            <button key={subj.id} onClick={() => handleSubjectSelect(subj.id)} className={`relative p-6 rounded-2xl border-2 transition-all card-hover ${selectedSubject === subj.id ? 'border-primary-500 bg-primary-50 dark:bg-primary-900/20' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800'}`}>
-                                                <div className={`w-12 h-12 rounded-xl bg-gradient-to-br ${subj.gradient} flex items-center justify-center text-white mb-4 shadow-md`}><Icon /></div>
-                                                <h3 className="text-lg font-bold text-gray-900 dark:text-white mb-1">{subj.name}</h3>
-                                                <p className="text-xs text-gray-500 dark:text-gray-400">{subj.id === 'math' ? 'Fonctions, Complexes, Suites' : subj.id === 'physics' ? 'RC, RL, RLC, Mécanique' : 'الشخص، الغير، النظرية والتجريب'}</p>
-                                                {selectedSubject === subj.id && <div className="absolute top-4 right-4 w-6 h-6 rounded-full bg-primary-500 flex items-center justify-center text-white"><Icons.Check /></div>}
-                                            </button>
-                                        );
-                                    })}
-                                </div>
-
-                                <div className="max-w-4xl mx-auto mt-6">
-                                    <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                        <div className="flex items-center space-x-3 mb-4"><Icons.Upload /> <h3 className="text-lg font-semibold">Coller un texte de cours alternatif</h3></div>
-                                        <textarea value={uploadedText} onChange={(e) => setUploadedText(e.target.value)} placeholder="Insérez vos paragraphes de révision ici ou cliquez simplement sur générer après avoir sélectionné une matière ci-dessus..." className="w-full h-32 p-4 rounded-xl border border-gray-200 dark:border-gray-600 bg-gray-50 dark:bg-gray-900 text-gray-900 dark:text-gray-100 placeholder-gray-400 resize-none focus:ring-2 focus:ring-primary-500 outline-none" />
-                                        <div className="mt-4 flex justify-end">
-                                            <button onClick={handleProcess} disabled={isProcessing || (!selectedSubject && !uploadedText.trim())} className="px-6 py-3 rounded-xl font-semibold text-white bg-gradient-to-r from-primary-600 to-accent-600 hover:from-primary-700 hover:to-accent-700 shadow-md transform hover:scale-105 active:scale-95 transition-all disabled:bg-gray-400 disabled:cursor-not-allowed">
-                                                {isProcessing ? <span className="flex items-center space-x-2"><div className="w-5 h-5 border-2 border-white border-t-transparent rounded-full animate-spin"></div><span>Analyse en cours...</span></span> : <span className="flex items-center space-x-2"><Icons.Sparkles /><span>Générer les Fiches</span></span>}
-                                            </button>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-
-                        {activeTab === 'dashboard' && showDashboard && currentData && (
-                            <div className="animate-slide-up space-y-8">
-                                <div className="flex flex-col md:flex-row md:items-center justify-between gap-4">
-                                    <div>
-                                        <h2 className="text-2xl font-bold text-gray-900 dark:text-white">Fiche de Révision : {subjects.find(s => s.id === currentData.subject)?.name}</h2>
-                                        <p className="text-gray-500 text-sm">Contenu optimisé pour le Bac PC</p>
-                                    </div>
-                                    <div className="flex items-center space-x-4">
-                                        <div className="px-4 py-2 rounded-xl bg-primary-50 dark:bg-primary-900/30 text-primary-700 dark:text-primary-300 font-medium flex items-center space-x-2"><Icons.Trophy /> <span>Score: {streak} 🔥</span></div>
-                                        <button onClick={() => { setShowDashboard(false); setActiveTab('upload'); setSelectedSubject(null); setUploadedText(''); }} className="px-4 py-2 rounded-xl border border-gray-200 dark:border-gray-700 hover:bg-gray-50 dark:hover:bg-gray-800 text-sm font-medium transition-colors">Changer de matière</button>
-                                    </div>
-                                </div>
-
-                                <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-                                    {/* Summary & Quiz Column */}
-                                    <div className="lg:col-span-7 space-y-6" dir={isRtl ? 'rtl' : 'ltr'}>
-                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                            <div className="flex items-center space-x-3 mb-6">
-                                                <div className="w-10 h-10 rounded-lg bg-blue-50 dark:bg-blue-900/30 flex items-center justify-center text-blue-600 dark:text-blue-400"><Icons.BookOpen /></div>
-                                                <div className={isRtl ? 'mr-3' : 'ml-3'}>
-                                                    <h3 className="text-lg font-bold">{isRtl ? 'الأفكار والمحاور الأساسية' : 'Points Clés du Cours'}</h3>
-                                                    <p className="text-xs text-gray-500">{isRtl ? 'ملخص مركز ومباشر للدرس' : 'Résumé structuré'}</p>
-                                                </div>
-                                            </div>
-                                            <ul className="space-y-4">
-                                                {currentData.summary.map((point, idx) => (
-                                                    <li key={idx} className="flex items-start space-x-3 p-3 rounded-xl hover:bg-gray-50 dark:hover:bg-gray-700/50 transition-colors">
-                                                        <div className="w-6 h-6 rounded-full bg-primary-100 dark:bg-primary-900/50 flex items-center justify-center text-primary-600 dark:text-primary-400 text-xs font-bold flex-shrink-0 mt-0.5 mx-2">{idx + 1}</div>
-                                                        <span className="text-gray-700 dark:text-gray-300 leading-relaxed text-md">{point}</span>
-                                                    </li>
-                                                ))}
-                                            </ul>
-                                        </div>
-
-                                        {/* Quiz Card */}
-                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                            <div className="flex items-center justify-between mb-6">
-                                                <div className="flex items-center space-x-3">
-                                                    <div className="w-10 h-10 rounded-lg bg-amber-50 dark:bg-amber-900/30 flex items-center justify-center text-amber-600 dark:text-amber-400"><Icons.Zap /></div>
-                                                    <div className={isRtl ? 'mr-3' : 'ml-3'}>
-                                                        <h3 className="text-lg font-bold">{isRtl ? 'سؤال وجواب كواشـف سريعـة' : 'Quiz Auto-Évaluation'}</h3>
-                                                        <p className="text-xs text-gray-500">{isRtl ? 'اختبر مدى تذكرك وفهمك للمحور' : 'Test de mémorisation active'}</p>
-                                                    </div>
-                                                </div>
-                                                {!showResult && <div className="text-xs font-semibold text-gray-400">Q {quizIndex + 1}/{currentData.quiz.length}</div>}
-                                            </div>
-
-                                            {!showResult ? (
-                                                <div className="space-y-4">
-                                                    <div className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700">
-                                                        <p className="text-md font-bold text-gray-900 dark:text-white mb-4">{currentData.quiz[quizIndex].q}</p>
-                                                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
-                                                            {currentData.quiz[quizIndex].options.map((option, idx) => {
-                                                                const isSelected = selectedAnswer === option;
-                                                                const isCorrect = option === currentData.quiz[quizIndex].a;
-                                                                return (
-                                                                    <button key={idx} onClick={() => !selectedAnswer && handleQuizAnswer(option)} disabled={selectedAnswer !== null} className={`p-3 rounded-xl border-2 text-left transition-all ${selectedAnswer !== null && isCorrect ? 'border-green-500 bg-green-50 dark:bg-green-900/20 text-green-700 dark:text-green-300' : isSelected && !isCorrect ? 'border-red-500 bg-red-50 dark:bg-red-900/20 text-red-700 dark:text-red-300' : 'border-gray-200 dark:border-gray-700 bg-white dark:bg-gray-800 hover:border-primary-300'}`}>
-                                                                        <span className="font-medium text-sm">{option}</span>
-                                                                    </button>
-                                                                );
-                                                            })}
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            ) : (
-                                                <div className="text-center py-6">
-                                                    <div className="w-16 h-16 rounded-full bg-gradient-to-br from-primary-500 to-accent-500 flex items-center justify-center text-white text-xl font-bold mx-auto mb-3 shadow-md">{Math.round((score / currentData.quiz.length) * 100)}%</div>
-                                                    <p className="text-sm text-gray-600 dark:text-gray-400 mb-4">{isRtl ? `أجبت بشكل صحيح على ${score} من أصل ${currentData.quiz.length}` : `Vous avez validé ${score} réponses sur ${currentData.quiz.length}`}</p>
-                                                    <button onClick={resetQuiz} className="px-5 py-2.5 rounded-xl bg-primary-600 hover:bg-primary-700 text-white font-medium text-sm flex items-center space-x-2 mx-auto"><Icons.RotateCcw /><span className="mx-2">{isRtl ? 'إعادة المحاولة' : 'Refaire'}</span></button>
-                                                </div>
-                                            )}
-                                        </div>
-                                    </div>
-
-                                    {/* Formulas & Flashcards Column */}
-                                    <div className="lg:col-span-5 space-y-6">
-                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                            <div className="flex items-center space-x-3 mb-6">
-                                                <div className="w-10 h-10 rounded-lg bg-purple-50 dark:bg-purple-900/30 flex items-center justify-center text-purple-600 dark:text-purple-400"><Icons.Calculator /></div>
-                                                <div>
-                                                    <h3 className="text-lg font-bold">Relations & Formules</h3>
-                                                    <p className="text-xs text-gray-500">Relations fondamentales pour le Watani</p>
-                                                </div>
-                                            </div>
-                                            
-                                            <div className="space-y-3">
-                                                {currentData.formulas.map((form, idx) => (
-                                                    <div key={idx} className="p-4 rounded-xl bg-gray-50 dark:bg-gray-900 border border-gray-100 dark:border-gray-700">
-                                                        <div className="text-xs font-semibold text-primary-600 dark:text-primary-400 mb-1">{form.name}</div>
-                                                        <div className="mb-2 text-center py-2 bg-white dark:bg-gray-800 rounded-md border border-gray-100 dark:border-gray-700 shadow-inner"><FormulaRenderer formula={form.formula} /></div>
-                                                        <p className="text-xs text-gray-500 dark:text-gray-400">{form.desc}</p>
-                                                    </div>
-                                                ))}
-                                            </div>
-                                        </div>
-
-                                        {/* Flashcard Component */}
-                                        <div className="bg-white dark:bg-gray-800 rounded-2xl p-6 border border-gray-200 dark:border-gray-700 shadow-sm">
-                                            <div className="flex items-center justify-between mb-4">
-                                                <h3 className="text-md font-bold">Fiches Mémoire / Flashcards</h3>
-                                                <span className="text-xs font-medium text-gray-400">{flashcardIndex + 1} / {currentData.formulas.length}</span>
-                                            </div>
-                                            <div className="relative h-44 cursor-pointer" onClick={() => setFlipped(!flipped)}>
-                                                <div className={`flip-card w-full h-full ${flipped ? 'flipped' : ''}`}>
-                                                    <div className="flip-card-inner relative w-full h-full">
-                                                        <div className="flip-card-front absolute w-full h-full bg-slate-100 dark:bg-slate-700 border rounded-xl flex flex-col items-center justify-center p-4 text-center">
-                                                            <span className="text-xs text-primary-500 font-bold uppercase tracking-wide">Concept / Notion</span>
-                                                            <h4 className="text-md font-bold mt-2 text-gray-800 dark:text-white">{currentData.formulas[flashcardIndex].name}</h4>
-                                                            <p className="text-xs text-gray-400 mt-4">Cliquez pour retourner la fiche</p>
-                                                        </div>
-                                                        <div className="flip-card-back absolute w-full h-full bg-primary-50 dark:bg-primary-900/40 border-2 border-primary-400 rounded-xl flex flex-col items-center justify-center p-4 text-center">
-                                                            <span className="text-xs text-accent-500 font-bold uppercase">Formule / Signification</span>
-                                                            <div className="my-2"><FormulaRenderer formula={currentData.formulas[flashcardIndex].formula} /></div>
-                                                            <p className="text-xs text-gray-500 dark:text-gray-300">{currentData.formulas[flashcardIndex].desc}</p>
-                                                        </div>
-                                                    </div>
-                                                </div>
-                                            </div>
-                                            <div className="flex justify-between mt-4">
-                                                <button onClick={(e) => { e.stopPropagation(); setFlipped(false); setTimeout(() => setFlashcardIndex(i => (i - 1 + currentData.formulas.length) % currentData.formulas.length), 150); }} className="px-3 py-1.5 text-xs font-medium border rounded-lg hover:bg-gray-50 dark:hover:bg-gray-700">Précédent</button>
-                                                <button onClick={(e) => { e.stopPropagation(); setFlipped(false); setTimeout(() => setFlashcardIndex(i => (i + 1) % currentData.formulas.length), 150); }} className="px-3 py-1.5 text-xs font-medium bg-primary-600 text-white rounded-lg hover:bg-primary-700">Suivant</button>
-                                            </div>
-                                        </div>
-                                    </div>
-                                </div>
-                            </div>
-                        )}
-                    </main>
-
-                    <footer className="mt-12 border-t border-gray-200 dark:border-gray-800 py-6 text-center text-xs text-gray-500">
-                        <p>TechDrasa © 2026 - Conçu spécifiquement pour la préparation intensive du Baccalauréat Marocain (Option PC).</p>
-                    </footer>
-                </div>
+            return React.createElement('section', { className: 'py-16 px-4 sm:px-6 lg:px-8 max-w-5xl mx-auto' },
+                React.createElement('div', { className: 'grid grid-cols-1 md:grid-cols-3 gap-6' },
+                    features.map((feature, idx) => {
+                        const IconComp = Icons[feature.icon];
+                        return React.createElement('div', {
+                            key: idx,
+                            className: 'rounded-2xl p-6 bg-white dark:bg-slate-800 border border-slate-200 dark:border-slate-700 hover:border-royal-300 dark:hover:border-royal-700 transition-all duration-300 hover:shadow-lg hover:shadow-royal-500/10'
+                        },
+                            React.createElement('div', { className: 'w-12 h-12 rounded-xl bg-gradient-to-br from-royal-500 to-purple-600 flex items-center justify-center mb-4 shadow-lg shadow-royal-500/20' },
+                                React.createElement(IconComp, { className: 'w-6 h-6 text-white' })
+                            ),
+                            React.createElement('h3', { className: 'text-lg font-bold text-slate-900 dark:text-white mb-2' }, feature.title),
+                            React.createElement('p', { className: 'text-sm text-slate-500 dark:text-slate-400 leading-relaxed' }, feature.desc)
+                        );
+                    })
+                )
             );
-        };
+        }
+
+        function Footer() {
+            return React.createElement('footer', { className: 'border-t border-slate-200 dark:border-slate-800 py-8 px-4' },
+                React.createElement('div', { className: 'max-w-5xl mx-auto text-center' },
+                    React.createElement('div', { className: 'flex items-center justify-center gap-2 mb-4' },
+                        React.createElement('div', { className: 'w-8 h-8 rounded-lg bg-gradient-to-br from-royal-500 to-purple-600 flex items-center justify-center' },
+                            React.createElement(Icons.Sparkles, { className: 'w-4 h-4 text-white' })
+                        ),
+                        React.createElement('span', { className: 'text-lg font-bold gradient-text' }, 'TechDrasa AI')
+                    ),
+                    React.createElement('p', { className: 'text-sm text-slate-400 dark:text-slate-500' }, 'منصة ذكية لمساعدة تلاميذ الباكالوريا المغربية - مسلك PC خيار فرنسي'),
+                    React.createElement('p', { className: 'text-xs text-slate-400 dark:text-slate-600 mt-2' }, '© 2026 - جميع الحقوق محفوظة')
+                )
+            );
+        }
+
+        function App() {
+            const [darkMode, setDarkMode] = useState(false);
+            const [activeSubject, setActiveSubject] = useState(subjects[0]);
+
+            useEffect(() => {
+                if (darkMode) {
+                    document.documentElement.classList.add('dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                }
+            }, [darkMode]);
+
+            useEffect(() => {
+                if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+                    setDarkMode(true);
+                }
+            }, []);
+
+            const toggleDarkMode = () => setDarkMode(!darkMode);
+
+            return React.createElement('div', { className: 'min-h-screen bg-slate-50 dark:bg-slate-900 transition-colors duration-500' },
+                React.createElement(Navbar, { darkMode, toggleDarkMode }),
+                React.createElement(HeroSection, null),
+                React.createElement(FeaturesSection, null),
+                React.createElement(SubjectsSection, { activeSubject, setActiveSubject }),
+                React.createElement(ChatSection, { activeSubject }),
+                React.createElement(Footer, null)
+            );
+        }
 
         const root = ReactDOM.createRoot(document.getElementById('root'));
-        root.render(<TechDrasa />);
+        root.render(React.createElement(App));
     </script>
 </body>
-</html>
+</html>'''
+
+# Save to file
+with open('/mnt/agents/output/index.html', 'w', encoding='utf-8') as f:
+    f.write(html_content)
+
+print("File saved successfully!")
+print(f"File size: {len(html_content)} characters")
